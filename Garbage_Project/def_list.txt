@@ -1,0 +1,282 @@
+def log(text, array=None):
+  テキストを表示
+  numpyがあればmin,max,shapeの表示
+
+class BatchNorm(KL.BatchNormalization):
+  KerasのBatchNormを必要なら中央で変更できるように拡張
+  Batchが小さいと訓練結果にマイナスな影響
+  あまり使わない
+
+def call(self, inputs, training=None):
+
+def compute_backbone_shapes(config, image_shape):
+
+def identity_block(input_tensor, kernel_size, filters, stage, block,
+                   use_bias=True, train_bn=True):
+
+default 3, the kernel size of middle conv layer at main path
+        filters: list of integers, the nb_filters of 3 conv layer at main path
+        stage: integer, current stage label, used for generating layer names
+        block: 'a','b'..., current block label, used for generating layer names
+        use_bias: Boolean. To use or not use a bias in conv layers.
+        train_bn: Boolean. Train or freeze Batch Norm layers
+    """
+    nb_filter1, nb_filter2, nb_filter3 = filters
+    conv_name_base = 'res' + str(stage) + block + '_branch'
+    bn_name_base = 'bn' + str(stage) + block + '_branch'
+
+    x = KL.Conv2D(nb_filter1, (1, 1), name=conv_name_base + '2a',
+                  use_bias=use_bias)(input_tensor)
+    x = BatchNorm(name=bn_name_base + '2a')(x, training=train_bn)
+    x = KL.Activation('relu')(x)
+
+    x = KL.Conv2D(nb_filter2, (kernel_size, kernel_size), padding='same',
+                  name=conv_name_base + '2b', use_bias=use_bias)(x)
+    x = BatchNorm(name=bn_name_base + '2b')(x, training=train_bn)
+    x = KL.Activation('relu')(x)
+
+    x = KL.Conv2D(nb_filter3, (1, 1), name=conv_name_base + '2c',
+                  use_bias=use_bias)(x)
+    x = BatchNorm(name=bn_name_base + '2c')(x, training=train_bn)
+
+    x = KL.Add()([x, input_tensor])
+    x = KL.Activation('relu', name='res' + str(stage) + block + '_out')(x)
+    return x
+
+
+def conv_block(input_tensor, kernel_size, filters, stage, block,
+               strides=(2, 2), use_bias=True, train_bn=True):
+
+default 3, the kernel size of middle conv layer at main path
+        filters: list of integers, the nb_filters of 3 conv layer at main path
+        stage: integer, current stage label, used for generating layer names
+        block: 'a','b'..., current block label, used for generating layer names
+        use_bias: Boolean. To use or not use a bias in conv layers.
+        train_bn: Boolean. Train or freeze Batch Norm layers
+    Note that from stage 3, the first conv layer at main path is with subsample=(2,2)
+    And the shortcut should have subsample=(2,2) as well
+    """
+    nb_filter1, nb_filter2, nb_filter3 = filters
+    conv_name_base = 'res' + str(stage) + block + '_branch'
+    bn_name_base = 'bn' + str(stage) + block + '_branch'
+
+    x = KL.Conv2D(nb_filter1, (1, 1), strides=strides,
+                  name=conv_name_base + '2a', use_bias=use_bias)(input_tensor)
+    x = BatchNorm(name=bn_name_base + '2a')(x, training=train_bn)
+    x = KL.Activation('relu')(x)
+
+    x = KL.Conv2D(nb_filter2, (kernel_size, kernel_size), padding='same',
+                  name=conv_name_base + '2b', use_bias=use_bias)(x)
+    x = BatchNorm(name=bn_name_base + '2b')(x, training=train_bn)
+    x = KL.Activation('relu')(x)
+
+    x = KL.Conv2D(nb_filter3, (1, 1), name=conv_name_base +
+                  '2c', use_bias=use_bias)(x)
+    x = BatchNorm(name=bn_name_base + '2c')(x, training=train_bn)
+
+    shortcut = KL.Conv2D(nb_filter3, (1, 1), strides=strides,
+                         name=conv_name_base + '1', use_bias=use_bias)(input_tensor)
+    shortcut = BatchNorm(name=bn_name_base + '1')(shortcut, training=train_bn)
+
+    x = KL.Add()([x, shortcut])
+    x = KL.Activation('relu', name='res' + str(stage) + block + '_out')(x)
+    return x
+
+
+def resnet_graph(input_image, architecture, stage5=False, train_bn=True):
+
+def apply_box_deltas_graph(boxes, deltas):
+
+def clip_boxes_graph(boxes, window):
+
+def __init__(self, proposal_count, nms_threshold, config=None, **kwargs):
+
+def get_config(self):
+
+def call(self, inputs):
+
+def nms(boxes, scores):
+
+def compute_output_shape(self, input_shape):
+
+def log2_graph(x):
+
+def __init__(self, pool_shape, **kwargs):
+
+def get_config(self):
+
+def call(self, inputs):
+
+def compute_output_shape(self, input_shape):
+
+def overlaps_graph(boxes1, boxes2):
+
+def detection_targets_graph(proposals, gt_class_ids, gt_boxes, gt_masks, config):
+
+def __init__(self, config, **kwargs):
+
+def get_config(self):
+
+def call(self, inputs):
+
+def compute_output_shape(self, input_shape):
+
+def compute_mask(self, inputs, mask=None):
+
+def refine_detections_graph(rois, probs, deltas, window, config):
+
+def nms_keep_map(class_id):
+
+def __init__(self, config=None, **kwargs):
+
+def get_config(self):
+
+def call(self, inputs):
+
+def compute_output_shape(self, input_shape):
+
+def rpn_graph(feature_map, anchors_per_location, anchor_stride):
+
+def build_rpn_model(anchor_stride, anchors_per_location, depth):
+
+def fpn_classifier_graph(rois, feature_maps, image_meta,
+                         pool_size, num_classes, train_bn=True,
+                         fc_layers_size=1024):
+
+def build_fpn_mask_graph(rois, feature_maps, image_meta,
+                         pool_size, num_classes, train_bn=True):
+
+def smooth_l1_loss(y_true, y_pred):
+
+def rpn_class_loss_graph(rpn_match, rpn_class_logits):
+
+def rpn_bbox_loss_graph(config, target_bbox, rpn_match, rpn_bbox):
+
+def mrcnn_class_loss_graph(target_class_ids, pred_class_logits,
+                           active_class_ids):
+
+def mrcnn_bbox_loss_graph(target_bbox, target_class_ids, pred_bbox):
+
+def mrcnn_mask_loss_graph(target_masks, target_class_ids, pred_masks):
+
+def load_image_gt(dataset, config, image_id, augmentation=None):
+
+defined in MINI_MASK_SHAPE.
+    """
+    # Load image and mask
+    image = dataset.load_image(image_id)
+    mask, class_ids = dataset.load_mask(image_id)
+    original_shape = image.shape
+    image, window, scale, padding, crop = utils.resize_image(
+        image,
+        min_dim=config.IMAGE_MIN_DIM,
+        min_scale=config.IMAGE_MIN_SCALE,
+        max_dim=config.IMAGE_MAX_DIM,
+        mode=config.IMAGE_RESIZE_MODE)
+    mask = utils.resize_mask(mask, scale, padding, crop)
+
+    # Augmentation
+    # This requires the imgaug lib (https://github.com/aleju/imgaug)
+    if augmentation:
+
+def hook(images, augmenter, parents, default):
+
+def build_detection_targets(rpn_rois, gt_class_ids, gt_boxes, gt_masks, config):
+
+def build_rpn_targets(image_shape, anchors, gt_class_ids, gt_boxes, config):
+
+def generate_random_rois(image_shape, count, gt_class_ids, gt_boxes):
+
+defined in MINI_MASK_SHAPE.
+
+        outputs list: Usually empty in regular training. But if detection_targets
+            is True then the outputs list contains target class_ids, bbox deltas,
+            and masks.
+        """
+
+    def __init__(self, dataset, config, shuffle=True, augmentation=None,
+                 random_rois=0, detection_targets=False):
+
+def __len__(self):
+
+def __getitem__(self, idx):
+
+def __init__(self, mode, config, model_dir):
+
+def build(self, mode, config):
+
+def __init__(self, x, name=None):
+
+def call(self, input):
+
+def find_last(self):
+
+def load_weights(self, filepath, by_name=False, exclude=None):
+
+def get_imagenet_weights(self):
+
+def compile(self, learning_rate, momentum):
+
+def set_trainable(self, layer_regex, keras_model=None, indent=0, verbose=1):
+
+def set_log_dir(self, model_path=None):
+
+def train(self, train_dataset, val_dataset, learning_rate, epochs, layers,
+              augmentation=None, custom_callbacks=None, no_augmentation_sources=None):
+
+defined values:
+
+defined in the Dataset class.
+        """
+        assert self.mode == "training", "Create model in training mode."
+
+        # Pre-defined layer regular expressions
+        layer_regex = {
+            # all layers but the backbone
+            "heads": r"(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
+            # From a specific Resnet stage and up
+            "3+": r"(res3.*)|(bn3.*)|(res4.*)|(bn4.*)|(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
+            "4+": r"(res4.*)|(bn4.*)|(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
+            "5+": r"(res5.*)|(bn5.*)|(mrcnn\_.*)|(rpn\_.*)|(fpn\_.*)",
+            # All layers
+            "all": ".*",
+        }
+        if layers in layer_regex.keys():
+
+def mold_inputs(self, images):
+
+def unmold_detections(self, detections, mrcnn_mask, original_image_shape,
+                          image_shape, window):
+
+def detect(self, images, verbose=0):
+
+def detect_molded(self, molded_images, image_metas, verbose=0):
+
+def get_anchors(self, image_shape):
+
+def ancestor(self, tensor, name, checked=None):
+
+def find_trainable_layer(self, layer):
+
+def get_trainable_layers(self):
+
+def run_graph(self, images, outputs, image_metas=None):
+
+def compose_image_meta(image_id, original_image_shape, image_shape,
+                       window, scale, active_class_ids):
+
+def parse_image_meta(meta):
+
+def parse_image_meta_graph(meta):
+
+def mold_image(images, config):
+
+def unmold_image(normalized_images, config):
+
+def trim_zeros_graph(boxes, name='trim_zeros'):
+
+def batch_pack_graph(x, counts, num_rows):
+
+def norm_boxes_graph(boxes, shape):
+
+def denorm_boxes_graph(boxes, shape):
